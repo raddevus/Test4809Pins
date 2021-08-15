@@ -29,11 +29,19 @@ void loop() {
 }
 
 void setMainLed(){
-  digitalWrite(MAIN_LED, mainLedCurrent); 
+  if (mainLedLast == LOW && mainLedCurrent == HIGH){
+    mainLedOn = !mainLedOn;
+  }
+  mainLedLast = mainLedCurrent;
+  digitalWrite(MAIN_LED, mainLedOn); 
 }
 
 void setDataLed(){
-  if (dataLedCurrent){
+  if (dataLedLast == LOW && dataLedCurrent == HIGH){
+    dataLedOn = !dataLedOn;
+  }
+  dataLedLast = dataLedCurrent;
+  if (dataLedOn){
     analogWrite(DATA_LED, 255);
     }
     else{
