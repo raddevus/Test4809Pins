@@ -12,6 +12,8 @@ boolean dataLedLast = LOW;
 boolean dataLedCurrent = LOW;
 boolean dataLedOn = false;
 
+typedef void (*ButtonPressHandler) (void);
+
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -22,28 +24,30 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  checkButton(MAIN_LED, MAIN_BUTTON, mainLedLast, mainLedCurrent,mainLedOn,true);
-  checkButton(DATA_LED, DATA_BUTTON, dataLedLast, dataLedCurrent,dataLedOn,false);
+  checkButton(MAIN_BUTTON, mainLedLast,mainLedCurrent, setMainLed);
+  checkButton(DATA_BUTTON, dataLedLast, dataLedCurrent,setDataLed);
 }
 
-void checkButton(int LED, int BUTTON,  bool &last,bool &current, bool &ledOn, bool isDigital ){
+void setMainLed(){
+  digitalWrite(MAIN_LED, mainLedCurrent); 
+}
+
+void setDataLed(){
+  if (dataLedCurrent){
+    analogWrite(DATA_LED, 255);
+    }
+    else{
+      analogWrite(DATA_LED, 0);
+    }
+}
+
+void checkButton(int BUTTON,  bool &last, bool &current, ButtonPressHandler handler ){
   current = debounce(last, BUTTON);              // Read debounced state
   if (last == LOW && current == HIGH)    // If it was pressed…
   {
-    ledOn = !ledOn;                                  // Toggle the LED value
+     handler();                                 // Toggle the LED value
   }
   last = current;                        // Reset button value
-  if (isDigital){
-    digitalWrite(LED, ledOn);                          // Change the LED state
-  }
-  else{
-    if (ledOn){
-    analogWrite(LED, 255);
-    }
-    else{
-      analogWrite(LED, 0);
-    }
-  }
 }
 
 boolean debounce(boolean last,int BUTTON)
